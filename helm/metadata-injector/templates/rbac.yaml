@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "metadata-injector.labels" . | nindent 4 }}
+  name: {{ include "metadata-injector.fullname" . }}
+rules:
+  - apiGroups: [""]
+    resources: [namespaces]
+    verbs: [list, watch]
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [create, watch]
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [list, get, watch]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    {{- include "metadata-injector.labels" . | nindent 4 }}
+  name: {{ include "metadata-injector.fullname" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "metadata-injector.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "metadata-injector.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}

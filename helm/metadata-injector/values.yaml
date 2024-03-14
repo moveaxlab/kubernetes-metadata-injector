@@ -1,0 +1,109 @@
+replicaCount: 1
+
+image:
+  repository: kubernetes-metadata-injector
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+admissionWebhookConfig:
+  timeoutSeconds: 2
+  namespaceSelector: {}
+  objectSelector: {}
+
+log:
+  level: info
+  jsonFromat: false
+
+triggerAnnotationPrefrix: moveax.injector
+
+patch:
+  podAnnotations: {}
+  nodeSelector:
+    kubernetes.io/os: linux
+  tolerations: []
+  # -- Labels to be added to patch job resources
+  labels: {}
+  # -- Security context for secret creation & webhook patch pods
+  securityContext: {}
+  image:
+    repository: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v1.4.0"
+  createSecretJob:
+    # -- Security context for secret creation containers
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    resources: {}
+    # limits:
+    #   cpu: 10m
+    #   memory: 20Mi
+    # requests:
+    #   cpu: 10m
+    #   memory: 20Mi
+  patchWebhookJob:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    resources: {}
