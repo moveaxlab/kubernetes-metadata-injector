@@ -43,16 +43,11 @@ func (se InjectAnnotations) Mutate(service *corev1.Service) (*corev1.Service, er
 		if len(annotations) != 0 {
 			// inject annotaions into service
 			for key, value := range annotations {
-				configMapNamespace, configMapName, configMapKey, err := se.getConfigMapRef(value)
+				configMapName, configMapKey, err := se.getConfigMapRef(value)
 				if err != nil {
 					return nil, err
 				}
-				if configMapNamespace != service.Namespace {
-					// avoid accessing information in different namespace
-					return nil, fmt.Errorf("Security error: service '%s/%s' is trying to reference configMap in differnt namespace: '%s/%s'", service.Namespace, service.Name, configMapNamespace, configMapName)
-
-				}
-				annotationValue, err := se.getConfigMapValue(configMapNamespace, configMapName, configMapKey)
+				annotationValue, err := se.getConfigMapValue(service.Namespace, configMapName, configMapKey)
 				if err != nil {
 					return nil, err
 				}
@@ -108,21 +103,16 @@ func (se InjectAnnotations) getRelatedAnnotations(annotations map[string]string,
 	return relatedAnnotations
 }
 
-func (se InjectAnnotations) getConfigMapRef(annotationValue string) (string, string, string, error) {
-	// value must be in the format "configmap-namespace/configmap-name:configmap-key"
-	split := strings.Split(annotationValue, "/")
+func (se InjectAnnotations) getConfigMapRef(annotationValue string) (string, string, error) {
+	// value must be in the format "configmap-name:configmap-key"
+	split := strings.Split(annotationValue, ":")
 	if len(split) != 2 {
-		return "", "", "", fmt.Errorf("annotationValue '%s' must be in this format: 'configmap-namespace/configmap-name:configmap-key'", annotationValue)
+		return "", "", fmt.Errorf("annotationValue '%s' must be in this format: 'configmap-name:configmap-key'", annotationValue)
 	}
-	configMapNamespace := split[0]
-	split1 := strings.Split(split[1], ":")
-	if len(split1) != 2 {
-		return "", "", "", fmt.Errorf("annotationValue '%s' must be in this format: 'configmap-namespace/configmap-name:configmap-key'", annotationValue)
-	}
-	configMapName := split1[0]
-	configMapKey := split1[1]
+	configMapName := split[0]
+	configMapKey := split[1]
 
-	return configMapNamespace, configMapName, configMapKey, nil
+	return configMapName, configMapKey, nil
 
 }
 
