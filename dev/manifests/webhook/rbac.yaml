@@ -22,7 +22,7 @@ rules:
     resources: [events]
     verbs: [create, watch]
   - apiGroups: [""]
-    resources: [secrets]
+    resources: [configmaps]
     verbs: [list, get, watch]
 
 ---

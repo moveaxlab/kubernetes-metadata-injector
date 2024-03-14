@@ -50,15 +50,15 @@ delete:
 	@echo "\n♻️  Deleting kubernetes-metadata-injector deployment if existing..."
 	kubectl delete -f dev/manifests/webhook/ || true
 
-.PHONY: secrets
-secrets:
-	@echo "\n🚀 Deploying test secrets..."
-	kubectl apply -f dev/manifests/secrets/
+.PHONY: cm
+cm:
+	@echo "\n🚀 Deploying test configMaps..."
+	kubectl apply -f dev/manifests/configmaps/
 
-.PHONY: delete-secrets
-delete-secrets:
-	@echo "\n♻️ Deleting test secrets..."
-	kubectl delete -f dev/manifests/secrets/ || true
+.PHONY: delete-cm
+delete-cm:
+	@echo "\n♻️ Deleting test configMaps..."
+	kubectl delete -f dev/manifests/configmaps/ || true
 
 .PHONY: svc
 svc:
@@ -77,4 +77,4 @@ logs:
 	kubectl logs -l app=kubernetes-metadata-injector -f
 
 .PHONY: delete-all
-delete-all: delete delete-config delete-secrets delete-svc
+delete-all: delete delete-config delete-cm delete-svc

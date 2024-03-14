@@ -2,7 +2,7 @@
 
 This is a [Kubernetes admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/). It is meant to be used as a validating and mutating admission webhook only and does not support any controller logic. It has been developed as a simple Go web service without using any framework or boilerplate such as kubebuilder.
 
-This project is aimed inject service annotation from secret.
+This project is aimed inject service annotation from configMap.
 
 ## Development
 ### Installation
@@ -137,7 +137,7 @@ A set of validations and mutations are implemented in an extensible framework. T
 
 #### Mutating Webhooks
 ##### Implemented
-- [inject annotation](pkg/mutation/service/inject_annotations.go): inject annotation variables taken from secret into the service based on specific annotation definition
+- [inject annotation](pkg/mutation/service/inject_annotations.go): inject annotation variables taken from configmap into the service based on specific annotation definition
 
 ##### How to add a new service mutation
 To add a new service mutation, create a file `pkg/mutation/service/MUTATION_NAME.go`, then create a new struct implementing the `service.ServiceMutator` interface.

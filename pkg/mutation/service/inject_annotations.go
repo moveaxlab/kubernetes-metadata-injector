@@ -43,13 +43,13 @@ func (se InjectAnnotations) Mutate(service *corev1.Service) (*corev1.Service, er
 		if len(annotations) != 0 {
 			// inject annotaions into service
 			for key, value := range annotations {
-				secretNamespace, secertName, secretKey := se.getSecretRef(value)
-				if secretNamespace != service.Namespace {
+				configMapNamespace, configMapName, configMapKey := se.getConfigMapRef(value)
+				if configMapNamespace != service.Namespace {
 					// avoid accessing information in different namespace
-					return nil, fmt.Errorf("Security error: service '%s/%s' is trying to reference secret in differnt namespace: '%s/%s'", service.Namespace, service.Name, secretNamespace, secertName)
+					return nil, fmt.Errorf("Security error: service '%s/%s' is trying to reference configMap in differnt namespace: '%s/%s'", service.Namespace, service.Name, configMapNamespace, configMapName)
 
 				}
-				annotationValue, err := se.getSecretValue(secretNamespace, secertName, secretKey)
+				annotationValue, err := se.getConfigMapValue(configMapNamespace, configMapName, configMapKey)
 				if err != nil {
 					return nil, err
 				}
@@ -105,28 +105,28 @@ func (se InjectAnnotations) getRelatedAnnotations(annotations map[string]string,
 	return relatedAnnotations
 }
 
-func (se InjectAnnotations) getSecretRef(annotationValue string) (string, string, string) {
-	// value must be in the format "secret-namespace/secret-name:secret-key"
+func (se InjectAnnotations) getConfigMapRef(annotationValue string) (string, string, string) {
+	// value must be in the format "configmap-namespace/configmap-name:configmap-key"
 	split := strings.Split(annotationValue, "/")
-	secretNamespace := split[0]
+	configMapNamespace := split[0]
 	split1 := strings.Split(split[1], ":")
-	secertName := split1[0]
-	secretKey := split1[1]
+	configMapName := split1[0]
+	configMapKey := split1[1]
 
-	return secretNamespace, secertName, secretKey
+	return configMapNamespace, configMapName, configMapKey
 
 }
 
-func (se InjectAnnotations) getSecretValue(secretNamespace string, secertName string, secretKey string) (string, error) {
-	secretObject, err := k8sClient().CoreV1().Secrets(secretNamespace).Get(context.Background(), secertName, metav1.GetOptions{})
+func (se InjectAnnotations) getConfigMapValue(configMapNamespace string, configMapName string, configMapKey string) (string, error) {
+	configMapObject, err := k8sClient().CoreV1().ConfigMaps(configMapNamespace).Get(context.Background(), configMapName, metav1.GetOptions{})
 	if err != nil {
-		se.Logger.Debugf("Cannot access secret '%s/%s'", secretNamespace, secertName)
+		se.Logger.Debugf("Cannot access configMap '%s/%s'", configMapNamespace, configMapName)
 		return "", err
 	}
-	value, ok := secretObject.Data[secretKey]
+	value, ok := configMapObject.Data[configMapKey]
 	if !ok {
-		se.Logger.Debugf("secret '%s/%s' has not key '%s'", secretNamespace, secertName, secretKey)
-		return "", fmt.Errorf("secret '%s/%s' has not key '%s'", secretNamespace, secertName, secretKey)
+		se.Logger.Debugf("configMap '%s/%s' has not key '%s'", configMapNamespace, configMapName, configMapKey)
+		return "", fmt.Errorf("configMap '%s/%s' has not key '%s'", configMapNamespace, configMapName, configMapKey)
 	}
 	return string(value), nil
 }
