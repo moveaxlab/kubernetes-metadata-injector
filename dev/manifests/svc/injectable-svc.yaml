@@ -5,7 +5,7 @@ metadata:
   namespace: apps
   annotations:
     ignored-annotation: igonred
-    moveax.injector.annotation.custom-annotation/subpath: "default/source-configmap:inject"
+    moveax.injector.annotation.custom-annotation/subpath: "apps/source-configmap:inject"
 spec:
   spec:
   ports:

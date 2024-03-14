@@ -1,8 +1,11 @@
 # kubernetes-metadata-injector
 
-This is a [Kubernetes admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/). It is meant to be used as a validating and mutating admission webhook only and does not support any controller logic. It has been developed as a simple Go web service without using any framework or boilerplate such as kubebuilder.
+This is a [Kubernetes admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/). This is base on: [slackhq/simple-kubernetes-webhook](https://github.com/slackhq/simple-kubernetes-webhook)
 
-This project is aimed inject service annotation from configMap.
+This Adminssion Webhook expose a Mutation webhook for service create and update. Its job is to inject annotation in service based on configmap value referenced by key in service annotation itself.
+
+Based on a `TRIGGER_ANNOTATION_PREFIX` the webhook read the related annotation wich must have a specific format
+
 
 ## Development
 ### Installation
@@ -122,13 +125,13 @@ service/injectable created
 You should see in the admission webhook logs that the service got mutated .
 
 ### Testing
+
+**TODO**
+
 Unit tests can be run with the following command:
 ```
 $ make test
 go test ./...
-?   	github.com/moveaxlab/kubernetes-metadata-injector	[no test files]
-ok  	github.com/moveaxlab/kubernetes-metadata-injector/pkg/admission	0.611s
-ok  	github.com/moveaxlab/kubernetes-metadata-injector/pkg/mutation	1.064s
 ```
 
 ### Admission Logic
