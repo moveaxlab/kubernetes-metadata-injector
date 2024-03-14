@@ -26,7 +26,7 @@ ok  	github.com/moveaxlab/kubernetes-metadata-injector/pkg/validation	0.413s
 ```
 
 ### TLS certificate
-Kubernetes only allows admission webhooks running with `https`. To generate a TLS secret, run [`./dev/gen-certs.sh`](/dev/gen-certs.sh). The base64 caBundle needs to be manually copied and pasted in the `MutatingWebhookConfiguration` and `ValidattingWebhookConfiguration` at [`./dev/manifests/cluster-config/`](./dev/manifests/cluster-config/)
+Kubernetes only allows admission webhooks running with `https`. To generate a TLS secret, run [`./dev/gen-certs.sh`](/dev/gen-certs.sh). The base64 caBundle needs to be manually copied and pasted in the `MutatingWebhookConfiguration` at [`./dev/manifests/cluster-config/`](./dev/manifests/cluster-config/)
 
 ### Logs
 The logs level defaults to `debug` and can be set with the env var:

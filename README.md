@@ -1,11 +1,78 @@
 # kubernetes-metadata-injector
 
-This is a [Kubernetes admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/). This is base on: [slackhq/simple-kubernetes-webhook](https://github.com/slackhq/simple-kubernetes-webhook)
+kubernetes-metadata-injector is a [Kubernetes admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) designed to enhance service objects within your Kubernetes clusters dynamically. Inspired by and based on [slackhq/simple-kubernetes-webhook](https://github.com/slackhq/simple-kubernetes-webhook), this project introduces a powerful way to manage annotations in Kubernetes services dynamically.
 
-This Adminssion Webhook expose a Mutation webhook for service create and update. Its job is to inject annotation in service based on configmap value referenced by key in service annotation itself.
+## Overview
 
-Based on a `TRIGGER_ANNOTATION_PREFIX` the webhook read the related annotation wich must have a specific format
+The Kubernetes Metadata Injector operates as a Mutation Webhook, specifically targeting service creation and update operations. Its primary function is to inject annotations into services based on the values defined in a ConfigMap, which is referenced by a key within the service's annotations.
 
+Utilizing a configurable `TRIGGER_ANNOTATION_PREFIX`, the webhook scans for annotations that match this prefix. These annotations should detail:
+- The annotation to be injected, identified within the key as `<TRIGGER_ANNOTATION_PREFIX>.annotation.<injectable-annotation-key>`.
+- The ConfigMap and ConfigMap key to fetch the annotation value from, specified as `<configmap-name>:<configmap-key>` within the value.
+
+Upon detecting these specifications, the webhook injects a new annotation into the service, or updates an existing one, with the value retrieved from the specified ConfigMap key within the same namespace as the service.
+
+
+## Example
+
+Given a ConfigMap named `configmap` within the `default` namespace:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+  namespace: default
+data:
+  key: configmap-value
+```
+
+And a service named `example-svc`, also in the `default` namespace, with an annotation specifying the injection:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-svc
+  namespace: default
+  annotations:
+    moveax.injector.annotation.custom-annotation/subpath: "configmap:key"
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      appProtocol: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: example
+    app.kubernetes.io/name: example
+```
+
+The resulting service after the webhook's injection will include the new annotation with the value from the ConfigMap:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-svc
+  namespace: default
+  annotations:
+    moveax.injector.annotation.custom-annotation/subpath: "configmap:key"
+    custom-annotation/subpath: configmap-value
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      appProtocol: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: example
+    app.kubernetes.io/name: example
+```
+
+This feature allows for dynamic configuration and management of service annotations, streamlining operations and enabling more flexible deployment strategies within Kubernetes environments.
 
 ## Development
 ### Installation
@@ -147,3 +214,25 @@ To add a new service mutation, create a file `pkg/mutation/service/MUTATION_NAME
 
 
 ## Production Deploy
+
+There is a helm chart located in `helm/metadata-injector` to deploy the admission webhook in a kubernetes cluster.
+
+The chart creates the webhook deployment and all the related permissions to operate.
+It will also deploy the `MutatingWebhookConfiguration`. \
+It will also take care of the certificate creation using the [ingress-nginx/kube-webhook-certgen](https://github.com/kubernetes/ingress-nginx/tree/main/images/kube-webhook-certgen) as job (nocert-manager is required) and patch the `MutatingWebhookConfiguration` to update the CA certificate used by the Kubernetes controller to validate the host.
+
+## Deployment
+
+Deploying the Kubernetes Metadata Injector into your Kubernetes cluster is streamlined through a Helm chart, simplifying the setup process and ensuring that all necessary components and permissions are correctly configured.
+
+### Helm Chart
+
+Located under `helm/metadata-injector`, the provided Helm chart facilitates the deployment of the admission webhook with ease. This chart handles the whole webhook deployment process, including all requisite permissions configuration configurations and certificate handling.
+
+### Key Features of the Helm Chart
+
+- **Webhook Deployment**: Automatically deploys the Kubernetes Metadata Injector as a Mutating Admission Webhook, ensuring that it intercepts and processes service creation and update requests as configured.
+- **Permissions and Configuration**: Sets up all necessary roles, role bindings, and service accounts required for the webhook to function correctly, adhering to the principle of least privilege.
+- **MutatingWebhookConfiguration**: Install the `MutatingWebhookConfiguration`, which is crucial for the webhook to correctly intercept and modify requests.
+- **Certificate Management**: The deployment process automates certificate generation without the need for a separate cert-manager. This is achieved using the [ingress-nginx/kube-webhook-certgen](https://github.com/kubernetes/ingress-nginx/tree/main/images/kube-webhook-certgen) tool, which runs as a Kubernetes job (helm pre-install hook) to create and manage the necessary certificates.
+- **CA Certificate Patching**: Helm post-install hook, the job patches the `MutatingWebhookConfiguration` to include the newly generated CA certificate. This step is essential as it allows the Kubernetes API server to trust the webhook server by validating its certificate against the patched CA certificate. Kubernetes APi server reired mandatory https webserver for admission webhook.

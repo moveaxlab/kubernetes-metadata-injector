@@ -16,6 +16,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build,sharing=private \
 # ---
 FROM scratch AS run
 
+LABEL org.opencontainers.image.source=https://github.com/moveaxlab/kubernetes-metadata-injector
+
 COPY --from=build /work/bin/admission-webhook /usr/local/bin/
 
 CMD ["admission-webhook"]
