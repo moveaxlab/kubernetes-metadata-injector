@@ -3,6 +3,16 @@ entries:
   metadata-injector:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2024-03-15T18:56:13.790742026Z"
+    description: Helm chart for Kubernetes metadata injector
+    digest: 846266861a12a96278c6f50434aacb584d7299a33d3d7221df9b2d7658821b37
+    name: metadata-injector
+    type: application
+    urls:
+    - https://github.com/moveaxlab/kubernetes-metadata-injector/releases/download/helm-chart-0.1.1/metadata-injector-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2024-03-15T18:38:32.63328295Z"
     description: Helm chart for Kubernetes metadata injector
     digest: 72a15022e81fe5b68873e34fa5784ee73d88081c0dc9dfcfe3acad65bd9fcc00
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/moveaxlab/kubernetes-metadata-injector/releases/download/helm-chart-0.1.0/metadata-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2024-03-15T18:38:32.633292427Z"
+generated: "2024-03-15T18:56:13.790750151Z"
