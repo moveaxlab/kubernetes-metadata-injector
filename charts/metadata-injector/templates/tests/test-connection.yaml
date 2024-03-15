@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: alpine
       command: ['wget']
-      args: ['https://{{ include "metadata-injector.fullname" . }}:443/health']
+      args: ['https://{{ include "metadata-injector.fullname" . }}:443/health', '--no-check-certificate']
   restartPolicy: Never
