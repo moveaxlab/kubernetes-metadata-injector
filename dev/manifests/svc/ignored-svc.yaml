@@ -7,7 +7,6 @@ metadata:
     ignored-annotation: igonred
     moveax.injector.service.aaa: igonred
 spec:
-  spec:
   ports:
     - name: http
       protocol: TCP
