@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: source-configmap
-  namespace: apps
-data:
-  inject: configmap-value
-  inject2: configmap-value2
