@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: kubernetes-metadata-injector
+  repository: ghcr.io/moveaxlab/kubernetes-metadata-injector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
