@@ -213,14 +213,6 @@ A set of validations and mutations are implemented in an extensible framework. T
 To add a new service mutation, create a file `pkg/mutation/service/MUTATION_NAME.go`, then create a new struct implementing the `service.ServiceMutator` interface.
 
 
-## Production Deploy
-
-There is a helm chart located in `helm/metadata-injector` to deploy the admission webhook in a kubernetes cluster.
-
-The chart creates the webhook deployment and all the related permissions to operate.
-It will also deploy the `MutatingWebhookConfiguration`. \
-It will also take care of the certificate creation using the [ingress-nginx/kube-webhook-certgen](https://github.com/kubernetes/ingress-nginx/tree/main/images/kube-webhook-certgen) as job (nocert-manager is required) and patch the `MutatingWebhookConfiguration` to update the CA certificate used by the Kubernetes controller to validate the host.
-
 ## Deployment
 
 Deploying the Kubernetes Metadata Injector into your Kubernetes cluster is streamlined through a Helm chart, simplifying the setup process and ensuring that all necessary components and permissions are correctly configured.
