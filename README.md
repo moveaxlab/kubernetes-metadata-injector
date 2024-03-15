@@ -6,7 +6,7 @@ kubernetes-metadata-injector is a [Kubernetes admission webhook](https://kuberne
 
 The Kubernetes Metadata Injector operates as a Mutation Webhook, specifically targeting service creation and update operations. Its primary function is to inject annotations into services based on the values defined in a ConfigMap, which is referenced by a key within the service's annotations.
 
-Utilizing a configurable `TRIGGER_ANNOTATION_PREFIX`, the webhook scans for annotations that match this prefix. These annotations should detail:
+Utilizing a configurable `TRIGGER_ANNOTATION_PREFIX` (should be passed as env var), the webhook scans for annotations that match this prefix. These annotations should detail:
 - The annotation to be injected, identified within the key as `<TRIGGER_ANNOTATION_PREFIX>.annotation.<injectable-annotation-key>`.
 - The ConfigMap and ConfigMap key to fetch the annotation value from, specified as `<configmap-name>:<configmap-key>` within the value.
 
