@@ -221,6 +221,14 @@ Deploying the Kubernetes Metadata Injector into your Kubernetes cluster is strea
 
 Located under `helm/metadata-injector`, the provided Helm chart facilitates the deployment of the admission webhook with ease. This chart handles the whole webhook deployment process, including all requisite permissions configuration configurations and certificate handling.
 
+### Chart Installation
+
+```bash
+helm repo add metadata-injector https://moveaxlab.github.io/kubernetes-metadata-injector/
+
+helm install --set triggerAnnotationPrefrix='moveax.injector' my-metadata-injector metadata-injector/metadata-injector
+```
+
 ### Key Features of the Helm Chart
 
 - **Webhook Deployment**: Automatically deploys the Kubernetes Metadata Injector as a Mutating Admission Webhook, ensuring that it intercepts and processes service creation and update requests as configured.
