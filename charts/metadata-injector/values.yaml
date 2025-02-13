@@ -51,6 +51,11 @@ tolerations: []
 
 affinity: {}
 
+podDisruptionBudget:
+  enabled: true
+  spec:
+    minAvailable: 0
+
 admissionWebhookConfig:
   timeoutSeconds: 2
   namespaceSelector: {}

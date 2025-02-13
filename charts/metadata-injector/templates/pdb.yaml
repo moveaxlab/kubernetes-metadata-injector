@@ -1,0 +1,17 @@
+{{- if .Values.podDisruptionBudget}}
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "metadata-injector.fullname" . }}
+  labels:
+    {{- include "metadata-injector.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.podDisruptionBudget.spec }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "metadata-injector.selectorLabels" . | nindent 6 }}
+{{- end }}
+{{- end }}
